@@ -38,9 +38,16 @@ int IO_burst_time(){
     return ceil(next_exp());
 }
 
-void process_progress(int is_IO_bound){
+void process_progress(int is_IO_bound, int process_code){
     double arrival_time = next_arrival_time();
     int Burst_number = number_burst();
+
+    char process_name = static_cast<char>(process_code);
+    string bound = is_IO_bound ? "IO" : "CPU";
+    
+    // Header info
+    cout << bound << "-bound process " << process_name << ": arrival time " << arrival_time <<
+        "ms; " << Burst_number << " CPU bursts" << endl;
 
     for(int i = 0; i < Burst_number-1; i++){
         int cpu_burst_time = CPU_burst_time();
@@ -49,12 +56,17 @@ void process_progress(int is_IO_bound){
         io_burst_time *= 10;
         cpu_burst_time *= 4;
         io_burst_time /= 8;
+        
+        // Print burst info
+        cout << "--> CPU burst " << cpu_burst_time << "ms --> I/O burst " << io_burst_time << "ms" << endl;
     }
 
     // Special for the last CPU burst
     int final_cpu_burst_time = CPU_burst_time();
     final_cpu_burst_time *= 4;
+    cout << "--> CPU burst " << final_cpu_burst_time << "ms" << endl;
 }
+
 int main(int argc, char** argv)
 {
     if (argc != 6){
@@ -80,12 +92,14 @@ int main(int argc, char** argv)
     
     srand(seed);
     
-    for (int i = 0; i < n; i++){
-        if(i != n-1){
-            process_progress(1);
+    int asciiValue = 65;
+    for (int i = 0; i < n; i++, asciiValue++){
+        cout << "Process " << i << ": " << endl;
+        if(i < n-1-n_CPU){
+            process_progress(1, asciiValue);
         }
         else{
-            process_progress(0);
+            process_progress(0, asciiValue);
         }
     }
 }
