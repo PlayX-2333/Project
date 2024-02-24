@@ -52,18 +52,22 @@ void process_progress(int is_IO_bound, int process_code){
     for(int i = 0; i < Burst_number-1; i++){
         int cpu_burst_time = CPU_burst_time();
         int io_burst_time = IO_burst_time();
-
-        io_burst_time *= 10;
-        cpu_burst_time *= 4;
-        io_burst_time /= 8;
         
+        io_burst_time *= 10;
+        if(!is_IO_bound){
+            cpu_burst_time *= 4;
+            io_burst_time /= 8;
+        }
+
         // Print burst info
         cout << "--> CPU burst " << cpu_burst_time << "ms --> I/O burst " << io_burst_time << "ms" << endl;
     }
 
     // Special for the last CPU burst
     int final_cpu_burst_time = CPU_burst_time();
-    final_cpu_burst_time *= 4;
+     if(!is_IO_bound){
+        final_cpu_burst_time *= 4;
+    }
     cout << "--> CPU burst " << final_cpu_burst_time << "ms" << endl;
 }
 
@@ -90,12 +94,11 @@ int main(int argc, char** argv)
     }
 
     
-    srand(seed);
+    srand48(seed);
     
     int asciiValue = 65;
     for (int i = 0; i < n; i++, asciiValue++){
-        cout << "Process " << i << ": " << endl;
-        if(i < n-1-n_CPU){
+        if(i < n-n_CPU){
             process_progress(1, asciiValue);
         }
         else{
