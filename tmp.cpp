@@ -25,11 +25,36 @@ int next_arrival_time(){
     return floor(next_exp());
 }
 
-int burst_time(){
+int number_burst(){
     double rand_uniform = drand48();
     return ceil(rand_uniform*64);
 }
 
+int CPU_burst_time(){
+    return ceil(next_exp());
+}
+
+int IO_burst_time(){
+    return ceil(next_exp());
+}
+
+void process_progress(int is_IO_bound){
+    double arrival_time = next_arrival_time();
+    int Burst_number = number_burst();
+
+    for(int i = 0; i < Burst_number-1; i++){
+        int cpu_burst_time = CPU_burst_time();
+        int io_burst_time = IO_burst_time();
+
+        io_burst_time *= 10;
+        cpu_burst_time *= 4;
+        io_burst_time /= 8;
+    }
+
+    // Special for the last CPU burst
+    int final_cpu_burst_time = CPU_burst_time();
+    final_cpu_burst_time *= 4;
+}
 int main(int argc, char** argv)
 {
     if (argc != 6){
@@ -55,12 +80,12 @@ int main(int argc, char** argv)
     
     srand(seed);
     
-    // for (int i = 0; i < n; i++){
-    //     double next = next_exp();
-    //     std::cout << next << std::endl;
-    // }
-
-    for(int i = 0; i < 100; i++){
-        cout << burst_time() << endl;
+    for (int i = 0; i < n; i++){
+        if(i != n-1){
+            process_progress(1);
+        }
+        else{
+            process_progress(0);
+        }
     }
 }
